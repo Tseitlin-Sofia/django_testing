@@ -20,7 +20,8 @@ def test_user_can_create_comment(author_client, author, news, form_data):
     response = author_client.post(url, data=form_data)
     # Проверяем редирект на страницу новости с якорем #comments
     expected_url = reverse('news:detail', kwargs={'pk': news.pk}) + '#comments'
-    # Проверяем, что был выполнен редирект на страницу успешного добавления комментария:
+    # Проверяем, что был выполнен редирект
+    # на страницу успешного добавления комментария:
     assertRedirects(response, expected_url)
     # Считаем общее количество комментариев в БД, ожидаем 1 комментарий.
     assert Comment.objects.count() == 1
@@ -78,7 +79,7 @@ def test_author_can_edit_comment(author_client, form_data, news, comment):
 
 def test_other_user_cant_edit_comment(
         not_author_client, form_data, news, comment
-        ):
+):
     url = reverse('news:edit', kwargs={'pk': news.pk})
     response = not_author_client.post(url, form_data)
     # Проверяем, что страница не найдена:

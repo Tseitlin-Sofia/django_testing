@@ -3,7 +3,6 @@ from http import HTTPStatus
 
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
-from news.models import News
 
 
 @pytest.mark.django_db  # Разрешаем доступ к базе данных.
@@ -35,14 +34,10 @@ def test_news_detail_available_for_anonymous_user(client, news):
         (pytest.lazy_fixture('author_client'), HTTPStatus.OK)
     ),
 )
-
-
 @pytest.mark.parametrize(
     'name',
     ('news:edit', 'news:delete'),
 )
-
-
 @pytest.mark.django_db
 def test_pages_availability_for_different_users(
         parametrized_client, name, comment, expected_status

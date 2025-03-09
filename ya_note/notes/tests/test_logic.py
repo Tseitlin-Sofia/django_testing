@@ -33,7 +33,7 @@ class TestNoteCreation(TestCase):
             'text': cls.NOTE_TEXT,
             'slug': cls.SLUG,
             'author': cls.user
-                    }
+        }
 
     def test_anonymous_user_cant_create_note(self):
         # Совершаем запрос от анонимного клиента, в POST-запросе отправляем
@@ -75,7 +75,7 @@ class TestNoteCreation(TestCase):
         # Пытаемся создать вторую заметку
         dublicate_note = self.auth_client.post(
             self.url, data=dublicate_slug_data
-            )
+        )
         expected_error = f'{self.SLUG}{WARNING}'
         self.assertFormError(
             dublicate_note,
@@ -99,7 +99,7 @@ class TestNoteEditDelete(TestCase):
             text='Текст заметки',
             slug='note_slug',
             author=cls.author
-            )
+        )
         # Формируем адрес блока с заметками, который понадобится для тестов.
         cls.note_url = reverse('notes:success')  # Адрес заметки.
         # Создаём клиент для пользователя-автора.
