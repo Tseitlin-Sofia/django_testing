@@ -15,7 +15,7 @@ def news_home_url():
 
 
 @pytest.fixture
-def news_detail_url():
+def news_detail_url(news):
     return reverse('news:detail', kwargs={'pk': news.pk})
 
 
