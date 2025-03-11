@@ -45,7 +45,7 @@ def test_comments_order(
     # Получаем комментарии через связь с новостью
     comments = news.comment_set.all()
     # Проверяем истинность утверждения "2 комментария есть в списке":
-    assert comments.count == 2
+    assert comments.count() == 2
     # Создадим сипсок отсортированных комментариев:
     sorted_comments = sorted(comments, key=attrgetter('created'))
     # Проверим, что комментарии отсортированы по дате публикации по убыванию.

@@ -22,7 +22,7 @@ def test_user_can_create_comment(author_client, author, news, form_data):
     # Проверяем, что был выполнен редирект
     # на страницу успешного добавления комментария:
     assertRedirects(response, expected_url)
-    assert Comment.objects.count() + 1 == initial_comment_count
+    assert Comment.objects.count() == initial_comment_count + 1
     # Чтобы проверить значения полей заметки -
     # получаем её из базы при помощи метода get():
     new_comment = Comment.objects.latest('created')
