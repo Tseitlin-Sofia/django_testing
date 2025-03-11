@@ -46,10 +46,12 @@ def test_comments_order(
     comments = news.comment_set.all()
     # Проверяем истинность утверждения "2 комментария есть в списке":
     assert comments.count() == 2
+    # Преобразуем queryset в list:
+    comments_list = list(comments)
     # Создадим сипсок отсортированных комментариев:
     sorted_comments = sorted(comments, key=attrgetter('created'), reverse=True)
     # Проверим, что комментарии отсортированы по дате публикации по убыванию.
-    assert list(comments) == sorted_comments
+    assert comments_list == sorted_comments
 
 
 @pytest.mark.django_db  # Разрешаем доступ к базе данных.
