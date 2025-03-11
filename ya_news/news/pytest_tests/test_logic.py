@@ -13,12 +13,12 @@ from news.models import Comment, News
 # Указываем фикстуру form_data в параметрах теста.
 def test_user_can_create_comment(author_client, author, news, form_data):
     url = reverse('news:detail', kwargs={'pk': news.pk})
+    # Подсчитываем количество комментариев до создания нового.
+    initial_comment_count = Comment.objects.count()
     # В POST-запросе отправляем данные, полученные из фикстуры form_data:
     response = author_client.post(url, data=form_data)
     # Проверяем редирект на страницу новости с якорем #comments
     expected_url = reverse('news:detail', kwargs={'pk': news.pk}) + '#comments'
-    # Подсчитываем количество комментариев до создания нового.
-    initial_comment_count = Comment.objects.count()
     # Проверяем, что был выполнен редирект
     # на страницу успешного добавления комментария:
     assertRedirects(response, expected_url)
