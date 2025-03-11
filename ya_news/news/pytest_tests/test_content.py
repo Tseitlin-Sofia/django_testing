@@ -49,7 +49,7 @@ def test_comments_order(
     # Преобразуем queryset в list:
     comments_list = list(comments)
     # Создадим сипсок отсортированных комментариев:
-    sorted_comments = sorted(comments, key=attrgetter('created'), reverse=True)
+    sorted_comments = sorted(comments, key=attrgetter('created'))
     # Проверим, что комментарии отсортированы по дате публикации по убыванию.
     assert comments_list == sorted_comments
 
