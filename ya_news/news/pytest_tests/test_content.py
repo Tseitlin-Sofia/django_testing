@@ -49,7 +49,7 @@ def test_comments_order(
     # Создадим сипсок отсортированных комментариев:
     sorted_comments = sorted(comments, key=attrgetter('created'), reverse=True)
     # Проверим, что комментарии отсортированы по дате публикации по убыванию.
-    assert comments == sorted_comments
+    assert list(comments) == sorted_comments
 
 
 @pytest.mark.django_db  # Разрешаем доступ к базе данных.
