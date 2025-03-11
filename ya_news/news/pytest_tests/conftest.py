@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.urls import reverse
 import pytest
 
 # Импортируем класс клиента.
@@ -6,6 +7,16 @@ from django.test.client import Client
 
 # Импортируем модель новости, чтобы создать экземпляр.
 from news.models import News, Comment
+
+
+@pytest.fixture
+def news_home_url():
+    return reverse('news:home')
+
+
+@pytest.fixture
+def news_detail_url():
+    return reverse('news:detail', kwargs={'pk': news.pk})
 
 
 @pytest.fixture

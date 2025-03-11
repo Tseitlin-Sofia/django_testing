@@ -36,13 +36,15 @@ class TestNoteCreation(TestCase):
         }
 
     def test_anonymous_user_cant_create_note(self):
+        # Считаем количество заметок до попытки добавления заметки.
+        initial_notes_count = Note.objects.count()
         # Совершаем запрос от анонимного клиента, в POST-запросе отправляем
         # предварительно подготовленные данные формы с текстом заметки.
         self.client.post(self.url, data=self.form_data)
         # Считаем количество заметок.
         notes_count = Note.objects.count()
         # Ожидаем, что заметок в базе нет - сравниваем с нулём.
-        self.assertEqual(notes_count, 0)
+        self.assertEqual(notes_count, initial_notes_count)
 
     def test_user_can_create_note(self):
         response = self.auth_client.post(self.url, data=self.form_data)

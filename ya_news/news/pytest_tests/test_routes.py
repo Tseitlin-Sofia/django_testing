@@ -1,8 +1,9 @@
-import pytest
 from http import HTTPStatus
 
-from django.urls import reverse
+import pytest
 from pytest_django.asserts import assertRedirects
+
+from django.urls import reverse
 
 
 @pytest.mark.django_db  # Разрешаем доступ к базе данных.
@@ -19,10 +20,10 @@ def test_pages_avalibility_for_anonymous_user(client, name):
 
 
 @pytest.mark.django_db
-def test_news_detail_available_for_anonymous_user(client, news):
-    url = reverse('news:detail', args=(news.pk,))
+def test_news_detail_available_for_anonymous_user(client, news_detail_url):
+    url = news_detail_url
     response = client.get(url)
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
 
 
 @pytest.mark.parametrize(

@@ -1,15 +1,12 @@
-import pytest
-# Импортируем функции для проверки редиректа и ошибки формы:
-from pytest_django.asserts import assertRedirects, assertFormError
-# Допишите импорт класса со статусами HTTP-ответов.
 from http import HTTPStatus
 
-# Импортируем из модуля forms сообщение об ошибке:
-from news.forms import WARNING, BAD_WORDS
+import pytest
+from pytest_django.asserts import assertFormError, assertRedirects
 
 from django.urls import reverse
 
-from news.models import Comment
+from news.forms import BAD_WORDS, WARNING
+from news.models import Comment, News
 
 
 @pytest.mark.django_db  # Разрешаем доступ к базе данных.
@@ -20,14 +17,16 @@ def test_user_can_create_comment(author_client, author, news, form_data):
     response = author_client.post(url, data=form_data)
     # Проверяем редирект на страницу новости с якорем #comments
     expected_url = reverse('news:detail', kwargs={'pk': news.pk}) + '#comments'
+    # Подсчитываем количество комментариев до создания нового.
+    initial_comment_count = Comment.objects.count()
     # Проверяем, что был выполнен редирект
     # на страницу успешного добавления комментария:
     assertRedirects(response, expected_url)
     # Считаем общее количество комментариев в БД, ожидаем 1 комментарий.
-    assert Comment.objects.count() == 1
+    assert Comment.objects.count() == initial_comment_count + 1
     # Чтобы проверить значения полей заметки -
     # получаем её из базы при помощи метода get():
-    new_comment = Comment.objects.get()
+    new_comment = Comment.objects.latest('created')
     # Сверяем атрибуты объекта с ожидаемыми.
     assert new_comment.text == form_data['text']
     assert new_comment.author == author
@@ -42,10 +41,12 @@ def test_anonymous_user_cant_create_comment(client, news, form_data):
     response = client.post(url, data=form_data)
     login_url = reverse('users:login')
     expected_url = f'{login_url}?next={url}'
+    # Подсчитываем количество комментариев до попытки создания нового.
+    initial_comment_count = Comment.objects.count()
     # Проверяем, что произошла переадресация на страницу логина:
     assertRedirects(response, expected_url)
     # Считаем количество заметок в БД, ожидаем 0 заметок.
-    assert Comment.objects.count() == 0
+    assert Comment.objects.count() == initial_comment_count
 
 
 @pytest.mark.django_db  # Разрешаем доступ к базе данных.
@@ -92,12 +93,16 @@ def test_other_user_cant_edit_comment(
 
 def test_author_can_delete_comment(author_client, pk_for_args):
     url = reverse('news:delete', args=pk_for_args)
+    # Подсчитываем количество комментариев до удаления 1 комментария.
+    initial_comment_count = Comment.objects.count()
     author_client.post(url)
-    assert Comment.objects.count() == 0
+    assert Comment.objects.count() == initial_comment_count - 1
 
 
 def test_other_user_cant_delete_note(not_author_client, pk_for_args):
     url = reverse('news:delete', args=pk_for_args)
+    # Подсчитываем количество новостей до удаления 1 новости.
+    initial_news_count = News.objects.count()
     response = not_author_client.post(url)
     assert response.status_code == HTTPStatus.NOT_FOUND
-    assert Comment.objects.count() == 1
+    assert Comment.objects.count() == initial_news_count

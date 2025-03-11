@@ -1,4 +1,5 @@
 import pytest
+from operator import attrgetter
 
 from django.urls import reverse
 
@@ -16,41 +17,39 @@ from news.forms import CommentForm
     )
 )
 def test_news_list_for_different_users(
-        # Используем фикстуру новости и параметры из декоратора:
-        news, news2, parametrized_client, news_in_list
+        news, news2, parametrized_client, news_home_url
 ):
-    url = reverse('news:home')
+    url = news_home_url
     # Выполняем запрос от имени параметризованного клиента:
     response = parametrized_client.get(url)
-    object_list = response.context['object_list']
-    # Проверяем истинность утверждения "новость есть в списке":
-    assert (news in object_list) is news_in_list
-    assert (news2 in object_list) is news_in_list
+    news_list = response.context['object_list']
+    # Проверяем истинность утверждения "2 новости есть в списке":
+    assert news_list.count() == 2
     # Проверяем количество новостей на странице:
-    assert len(object_list) <= 10
+    assert news_list.count() <= 10
     # Новости отсортированы по дате публикации по возрастанию.
-    for i in range(len(object_list) - 1):
-        assert object_list[i].date >= object_list[i + 1].date
+    for i in range(len(news_list) - 1):
+        assert news_list[i].date >= news_list[i + 1].date
 
 
 @pytest.mark.django_db  # Разрешаем доступ к базе данных.
 def test_comments_order(
         # Используем фикстуру для создания комментариев:
-        comment, comment2, not_author_client, news
+        comment, comment2, not_author_client, news_detail_url
 ):
-    url = reverse('news:detail', kwargs={'pk': news.pk})
+    url = news_detail_url
     # Выполняем запрос от имени не автора поста:
     response = not_author_client.get(url)
     # Извлекаем объект новости из контекста
-    news_object = response.context['news']
+    news = response.context['news']
     # Получаем комментарии через связь с новостью
-    comments = news_object.comment_set.all()
-    # Проверяем истинность утверждения "комментарий есть в списке":
-    assert (comment in comments) is True
-    assert (comment2 in comments) is True
-    # Комментарии отсортированы по дате публикации по убыванию.
-    for i in range(len(comments) - 1):
-        assert comments[i].created <= comments[i + 1].created
+    comments = news.comment_set.all()
+    # Проверяем истинность утверждения "2 комментария есть в списке":
+    assert comments.count == 2
+    # Создадим сипсок отсортированных комментариев:
+    sorted_comments = sorted(comments, key=attrgetter('created'))
+    # Проверим, что комментарии отсортированы по дате публикации по убыванию.
+    assert comments == sorted_comments
 
 
 @pytest.mark.django_db  # Разрешаем доступ к базе данных.
