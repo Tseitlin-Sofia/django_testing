@@ -47,7 +47,7 @@ def test_comments_order(
     # Проверяем истинность утверждения "2 комментария есть в списке":
     assert comments.count() == 2
     # Создадим сипсок отсортированных комментариев:
-    sorted_comments = sorted(comments, key=attrgetter('created'))
+    sorted_comments = sorted(comments, key=attrgetter('created'), reverse=True)
     # Проверим, что комментарии отсортированы по дате публикации по убыванию.
     assert comments == sorted_comments
 
