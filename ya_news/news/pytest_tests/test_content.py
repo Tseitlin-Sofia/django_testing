@@ -9,11 +9,11 @@ from news.forms import CommentForm
 @pytest.mark.django_db  # Разрешаем доступ к базе данных.
 @pytest.mark.parametrize(
     # Задаём названия для параметров:
-    'parametrized_client, news_in_list',
+    'parametrized_client',
     (
         # Передаём фикстуры в параметры при помощи "ленивых фикстур":
-        (pytest.lazy_fixture('author_client'), True),
-        (pytest.lazy_fixture('not_author_client'), True),
+        (pytest.lazy_fixture('author_client')),
+        (pytest.lazy_fixture('not_author_client')),
     )
 )
 def test_news_list_for_different_users(
